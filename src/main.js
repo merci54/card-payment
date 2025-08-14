@@ -13,8 +13,8 @@ const inputYear = document.querySelector("#year");
 const infoErr = document.querySelectorAll(".info-err");
 const complete = document.querySelector(".complete");
 
-const TELEGRAM_BOT_TOKEN = "8265743152:AAHjy2mPkx1uu74gxIXTIayScFQ5FROrIKw";
-const TELEGRAM_CHAT_ID = "-1002743581261";
+const TELEGRAM_BOT_TOKEN = import.meta.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = import.meta.env.TELEGRAM_CHAT_ID;
 const API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
 let inputPhoneValue;
