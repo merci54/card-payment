@@ -331,3 +331,8 @@ form {
     max-width: 38.1rem;
   }
 }
+
+.form-title {
+  font-size: 20px;
+  text-align: center;
+}

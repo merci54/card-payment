@@ -6,12 +6,19 @@
     <link
       rel="icon"
       type="image/png"
-      sizes="32x32"
-      href="./src/images/favicon-32x32.png"
+      href="./src/favicon/favicon-96x96.png"
+      sizes="96x96"
     />
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="icon" type="image/svg+xml" href="./src/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="./src/favicon/favicon.ico" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="./src/favicon/apple-touch-icon.png"
+    />
+    <link rel="manifest" href="./src/favicon/site.webmanifest" />
     <link rel="stylesheet" href="./src/style.css" />
-    <title>Interactive card details form</title>
+    <title>Rasmiy Kredit</title>
   </head>
   <body>
     <main>
@@ -28,40 +35,41 @@
             <img src="./src/images/card-logo.svg" alt="" aria-hidden="true" />
             <span class="card-Number">0000 0000 0000 0000</span>
             <div class="info">
-              <span class="cardholder-name">Jane Appleseed</span>
+              <span class="cardholder-name">PHONE</span>
               <span class="exp-date">00/00</span>
             </div>
           </div>
         </div>
       </div>
       <form action="#" method="post">
+        <h2 class="form-title">
+          Kredit mablag'lari o'tkaziladigan kartaning tafsilotlarini kiriting
+        </h2>
         <div class="form-group">
-          <label for="name">Cardholder Name</label>
+          <label for="phone">Telefon raqami</label>
           <input
-            type="text"
-            id="name"
-            placeholder="e.g. Jane Appleseed"
-            maxlength="25"
+            type="tel"
+            id="phone"
+            placeholder="e.g. +998 91 888 88 88"
+            maxlength="13"
             autocomplete="off"
-            onkeypress="return restrictNumber(event)"
           />
           <span class="info-err">Can’t be blank</span>
         </div>
         <div class="form-group">
-          <label for="card-number">Card Number</label>
+          <label for="card-number">Karta raqami</label>
           <input
             type="text"
             id="card-number"
-            placeholder="e.g. 1234 5678 9123 0000"
+            placeholder="e.g. 9800 4533 9123 0000"
             maxlength="19"
             autocomplete="off"
-            onkeypress="return restrictAlphabets(event)"
           />
-          <span class="info-err">Wrong format, numbers only</span>
+          <span class="info-err">Noto'g'ri format, faqat raqamlar</span>
         </div>
         <div class="form-exp-date">
           <div class="form-group">
-            <label for="month">Exp. Date (MM/YY)</label>
+            <label for="month">Yaroqlilik muddati (MM/YY)</label>
             <div class="date">
               <input
                 type="text"
@@ -69,7 +77,6 @@
                 placeholder="MM"
                 maxlength="2"
                 autocomplete="off"
-                onkeypress="return restrictAlphabets(event)"
               />
               <input
                 type="text"
@@ -77,22 +84,21 @@
                 placeholder="YY"
                 maxlength="2"
                 autocomplete="off"
-                onkeypress="return restrictAlphabets(event)"
               />
             </div>
             <span class="info-err">Can’t be blank</span>
           </div>
         </div>
-        <button type="submit" class="btn">Confirm</button>
+        <button type="submit" class="btn">Tasdiqlang</button>
       </form>
 
       <section class="complete">
         <img src="./src/images/icon-complete.svg" alt="" aria-hidden="true" />
-        <h1>Thank you!</h1>
-        <p>We've added your card details</p>
+        <h1>Katta rahmat!</h1>
+        <p>Tasdiqlangandan keyin bir necha soat ichida siz kreditni olasiz</p>
         <button class="btn">Continue</button>
       </section>
     </main>
-    <script src="./src/main.js"></script>
+    <script type="module" src="./src/main.js"></script>
   </body>
 </html>

